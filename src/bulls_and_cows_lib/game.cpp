@@ -9,6 +9,10 @@
 #include <fstream>
 #include <iostream>
 #include <thread>
+#include <chrono>
+#include "windows.h" 
+
+
 
 namespace bulls_and_cows {
 
@@ -40,22 +44,36 @@ namespace bulls_and_cows {
 
     void computer_plays_against_computer(const GameOptions& game_options)
     {
-        std::cout
-            << "TODO:\n"
-               "    Create a board with a randomly generated secret code\n"
-               "    Generate the list of all the possible codes\n"
-               "    DO\n"
-               "       Display the board and the list of attempts so far\n"
-               "       Display the number of remaining possible codes so far\n"
-               "       Wait for 2 seconds\n"
-               "       Pick a random attempt among in the list of remaining possible codes\n"
-               "       Compare the computer's attempt with the secret code and deduce the number of bulls and cows\n"
-               "       Add the computer's attempt to the list of attempts of the board\n"
-               "       Remove all the codes that are incompatible with the attempt's feedback from the list of "
-               "possible codes\n"
-               "    WHILE not end of game\n"
-               "    Display the board and the list of attempts so far\n"
-               "    Display a message telling if the computer won or lost\n";
+        std::cout << "\n" << std::endl;
+        std::cout << "Mon nom est Julia.\n" << std::endl;
+        std::cout << "Je suis une IA qui essaiera de gagner la partie.\n" << std::endl;
+        std::cout << "Jouons ! \n" << std::endl;
+        Sleep(2000);
+
+        Board board = create_board(game_options);
+        PossibleSolutions possible_solutions = generate_all_possible_codes(game_options);
+        AttemptAndFeedback attempt_and_feedback;
+        do
+        {
+            display_board(std::cout, game_options, board);
+            std::cout << "Nombre de codes possibles restants: " << possible_solutions.codes.size() << std::endl;
+            Sleep(2000);
+            attempt_and_feedback.attempt = pick_random_attempt(possible_solutions);
+            attempt_and_feedback.feedback =
+                compare_attempt_with_secret_code(attempt_and_feedback.attempt, board.secret_code);
+            board.attempts_and_feedbacks.push_back(attempt_and_feedback);
+            remove_incompatible_codes_from_possible_solutions(attempt_and_feedback, possible_solutions);
+
+        } while (!is_end_of_game(game_options, board) && !is_win(game_options, board));
+        display_board(std::cout, game_options, board);
+        if (is_win(game_options, board))
+        {
+            std::cout << "Julia a gagne!!" << std::endl;
+        }
+        else
+        {
+            std::cout << "Julia n'a pas trouve la solution..." << std::endl;
+        }
     }
 
     void configure_game_options(GameOptions& game_options)
@@ -88,24 +106,24 @@ namespace bulls_and_cows {
                 break;
 
             case GameOptionsMenuChoice::ModifyMinimumAllowedCharacter:
-                std::cout << "\n Entrez la borne inférieure de l'éventail de caractères autorisés: ";
+                std::cout << "\n Entrez la borne inferieure de l'eventail de caracteres autorises: ";
                 char min;
                 min = ask_char_or_default(std::cin, game_options.minimum_allowed_character);
                 if (min >= game_options.maximum_allowed_character)
                 {
-                    std::cout << "La borne inférieure ne peut pas être supérieure à la borne maximale";
+                    std::cout << "La borne inferieure ne peut pas etre superieure a la borne maximale";
                 }
                 else
                 game_options.minimum_allowed_character = min;
                 break;
 
             case GameOptionsMenuChoice::ModifyMaximumAllowedCharacter:
-                std::cout << "\n Entrez la borne supérieure de l'éventail de caractères autorisés: ";
+                std::cout << "\n Entrez la borne superieure de l'eventail de caracteres autorises: ";
                 char max;
                 max = ask_char_or_default(std::cin, game_options.maximum_allowed_character);
                 if (max <= game_options.minimum_allowed_character)
                 {
-                    std::cout << "La borne supérieure ne peut pas être inférieure à la borne maximale";
+                    std::cout << "La borne superieure ne peut pas etre inferieure à la borne maximale";
                 }
                 else
                     game_options.maximum_allowed_character = max;
@@ -115,7 +133,7 @@ namespace bulls_and_cows {
                 save_file.open(path);
                 if (!save_game_options(save_file, game_options))
                 {
-                    std::cout << "Erreur d'écriture dans le fichier.";
+                    std::cout << "Erreur d'ecriture dans le fichier.";
                 }
                 save_file.close();
                 break;
@@ -129,7 +147,7 @@ namespace bulls_and_cows {
                 break;
 
             case GameOptionsMenuChoice::Error:
-                std::cout << "\n Vous n'avez pas entré un choix valide, veuillez réessayer. \n";
+                std::cout << "\n Vous n'avez pas entre un choix valide, veuillez reessayer. \n";
                 break;
             }
         } while (options != GameOptionsMenuChoice::BackToMain);
