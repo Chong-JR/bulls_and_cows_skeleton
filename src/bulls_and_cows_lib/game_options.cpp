@@ -1,4 +1,5 @@
 
+
 #include "game_options.hpp"
 #include "input.hpp"
 #include <fstream>
@@ -8,7 +9,8 @@
 
 namespace bulls_and_cows {
 
-    // TODO: define the body of the functions declared in game_options.cpp
+    // Affichage des options du jeu
+    // utilisation d'objets output stream
     void display_game_options(std::ostream& output_stream, const GameOptions& game_options)
     {
         output_stream << "Voici les options du jeu: " << std::endl;
@@ -21,19 +23,23 @@ namespace bulls_and_cows {
                       << std::endl;
     }
 
+    // Affichage du menu des options du jeu
+    // utilisation d'objets output stream
     void display_game_options_menu(std::ostream& output_stream)
     {
         output_stream << "Configuration des options:" << std::endl;
         output_stream << "0 - Retour au menu principal" << std::endl;
         output_stream << "1 - Modifier le nombre maximal de tentative par jeu" << std::endl;
         output_stream << "2 - Modifier le nombre de caracteres du code" << std::endl;
-        output_stream << "3 - Modifier l'eventail de caracteres autorises (borne inférieure)" << std::endl;
-        output_stream << "4 - Modifier l'eventail de caractères autorises (borne supérieure)" << std::endl;
+        output_stream << "3 - Modifier l'eventail de caracteres autorises (borne inferieure)" << std::endl;
+        output_stream << "4 - Modifier l'eventail de caractères autorises (borne superieure)" << std::endl;
         output_stream << "5 - Sauver les options" << std::endl;
         output_stream << "6 - Charger les options" << std::endl;
         output_stream << "Quel est votre choix ?" << std::endl;
     }
 
+    //fonction demandant au joueur son choix dans le menu des options
+    //on utilisera une syntaxe switch
     GameOptionsMenuChoice ask_game_options_menu_choice(std::istream& input_stream)
     {
         const int choix = ask_int_or_default(input_stream, -1);
@@ -57,6 +63,8 @@ namespace bulls_and_cows {
         return GameOptionsMenuChoice::Error;
     }
 
+    // Sauvegarde des options du jeu
+    // on changera les valeurs dans le .txt lié aux options du jeu (avec des objets output_file_stream pour l'écriture)
     bool save_game_options(std::ostream& output_file_stream, const GameOptions& game_options)
     {
         if (output_file_stream)
@@ -70,6 +78,9 @@ namespace bulls_and_cows {
         return false;
     }
 
+    // Chargement des options du jeu
+    // on ira cherecher dans le .txt les options, puis on les affichera
+    // on utilisera des objects input file stream pour la lecture
     bool load_game_options(std::istream& input_file_stream, GameOptions& game_options)
     {
         if (input_file_stream)
@@ -99,3 +110,4 @@ namespace bulls_and_cows {
     }
 
 } // namespace bulls_and_cows
+
